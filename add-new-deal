@@ -1,0 +1,280 @@
+"use client";
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+import PdfDownloadBtn from '../../components/PdfDownloadBtn/PdfDownloadBtn';
+import ExcelDownloadBtn from '../../components/ExcelDownloadBtn/ExcelDownloadBtn';
+import React, { useState, useEffect, useRef } from 'react';
+import SearchFromDate from "../../components/searchFromDate/SearchFromDate";
+import SearchToDate from "../../components/searchToDate/SearchToDate";
+import { GetAllCallCenterDealsOptions } from '../../api/cms/add-new-deal-journey-type/page';
+
+DataTable.use(DT);
+
+export default function AddNewDealPage() {
+  const [getCallCenterDeals, setGetCallCenterDeals] = useState([]);
+
+  const tableRef = useRef(null);
+
+  // Fetch Call Center Deals
+  const GetCallCenterDealsOptions = async () => {
+    try {
+      const response = await GetAllCallCenterDealsOptions();
+      console.log(response)
+      setGetCallCenterDeals(response);
+    } catch (err) {
+      console.error('Error fetching Call Center Deals:', err);
+    }
+  };
+
+  const [formData, SetFormData] = useState({
+    inId: 0,
+    tenant_id: 0,
+    vcCallOnlyCode: "",
+    vcSourceCode: "",
+    vcSourceName: "",
+    vcDestinationName: "",
+    vcDestinationCode: "",
+    vcJourneyType: "",
+    dtDepartureDate: "",
+    dtArrivalDate: "",
+    vcAirlineName: "",
+    vcAirlineCode: "",
+    vcBookingClass: "",
+    vcCabinClass: "",
+    expiryDate: "",
+    vcBookingAmount: "",
+    btActive: true,
+    vcCreatedBy: "",
+    vcDealSource: ""
+  });
+
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setGetCallCenterDeals((prev) => ({ ...prev, [name]: value }));
+    SetFormData((prev) => ({ ...prev, [name]: '' })); // Clear the error when user starts typing
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', { formData });
+    // Add your API call to save the data here
+  };
+
+  useEffect(() => {
+    GetCallCenterDealsOptions();
+  }, []);
+
+  return (
+    <>
+      <section className="manage-vacation-wrapp leadbooking-flight pb bg-gray">
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <div className="section-title text-center py">
+                <h1>Manage Call Center Fare</h1>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12">
+              <div className="form-wrapper">
+                <form onSubmit={handleSubmit} className="row align-items-end">
+                  <div className="col-12 col-md-3 mt-3 mt-md-0">
+                    <div className="form-fields">
+                      <label className="form-label">Source City Name</label>
+                      <input type="text" className="form-control" name='vcSourceName' value={formData.vcSourceName} onChange={handleInput} placeholder="Enter City Name" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3 mt-md-0">
+                    <div className="form-fields">
+                      <label className="form-label" htmlFor="">Source City Code</label>
+                      <input type="text" className="form-control" name='vcSourceCode' value={formData.vcSourceCode} onChange={handleInput} placeholder="Enter Source City Code" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3 mt-md-0">
+                    <div className="form-fields">
+                      <label className="form-label" htmlFor="">Destination City Name</label>
+                      <input type="text" className="form-control" name='vcDestinationName' value={formData.vcDestinationName} onChange={handleInput} placeholder="Enter Destination City Name" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3 mt-md-0">
+                    <div className="form-fields">
+                      <label className="form-label" htmlFor="">Destination City Code</label>
+                      <input type="text" className="form-control" name='vcDestinationCode' value={formData.vcDestinationCode} onChange={handleInput} placeholder="Enter Destination City Code" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Journey Type</label>
+                      {/* <select name="vc_WebsiteName" value={formData.vcJourneyType || ""} onChange={handleInput} className="form-control">
+                        <option value="">-- Select Website Name --</option>
+                        {getCallCenterDeals.map((item) => (
+                          <option key={item.vcJourneyType} value={item.vcJourneyType}>
+                            {item.vcJourneyType}
+                          </option>
+                        ))}
+                      </select> */}
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Cabin Class</label>
+                      <select name="trip-type" id="trip_type" className="form-control">
+                        <option value="select">-- Select Class --</option>
+                        <option value="Economy">Economy</option>
+                        <option value="Premium Economy">Premium Economy</option>
+                        <option value="Business">Business</option>
+                        <option value="First">First</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Booking Class</label>
+                      <input type="text" className="form-control" name='vcBookingClass' value={formData.vcBookingClass} onChange={handleInput} placeholder="Enter Booking Class" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Airline Name</label>
+                      <input type="text" className="form-control" name='vcAirlineName' value={formData.vcAirlineName} onChange={handleInput} placeholder="Enter Airline Name" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Airline Code</label>
+                      <input type="text" className="form-control" name='vcAirlineCode' value={formData.vcAirlineCode} onChange={handleInput} placeholder="Enter Airline Code" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <SearchFromDate name='dtDepartureDate' value={formData.dtDepartureDate} onChange={handleInput} label="Departure Date" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <SearchToDate name='dtArrivalDate' value={formData.dtArrivalDate} onChange={handleInput} label="Return Date" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Deal Code</label>
+                      <input type="text" className="form-control" name='vcCallOnlyCode' value={formData.vcCallOnlyCode} onChange={handleInput} placeholder="Enter Deal Code" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label" htmlFor="">Booking Amount</label>
+                      <input type="text" className="form-control" name='vcBookingAmount' value={formData.vcBookingAmount} onChange={handleInput} placeholder="Enter Booking Amount" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <SearchFromDate name='expiryDate' value={formData.expiryDate} onChange={handleInput} label="Deal Expiry Date" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <SearchToDate name='vcDealSource' value={formData.vcDealSource} onChange={handleInput} label="Deal Source" />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-3 mt-3">
+                    <div className="form-fields">
+                      <label className="form-label">Is Active</label>
+                      <input type="checkbox" className="ms-2" name='btActive' value={formData.btActive} onChange={handleInput} placeholder="Enter Booking Amount" />
+                    </div>
+                  </div>
+                  <div className="col-12 text-center">
+                    <button type="submit" className="cm-button mt-3">Submit</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-lg-6">
+              <div className="agent-tabs">
+                <ul className="agent-tabs-list">
+                  <li>
+                    <ExcelDownloadBtn tableRef={tableRef} fileName="booking-lead-report.xlsx" />
+                  </li>
+                  <li>
+                    <PdfDownloadBtn tableRef={tableRef} fileName="booking-lead-report.pdf" />
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="agent-activity-wrap pb lead-booking-flight-wrap">
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-lg-6">
+              <div className="agent-tabs">
+                <ul className="agent-tabs-list">
+                  <li>
+                    <ExcelDownloadBtn tableRef={tableRef} fileName="booking-lead-report.xlsx" />
+                  </li>
+                  <li>
+                    <PdfDownloadBtn tableRef={tableRef} fileName="booking-lead-report.pdf" />
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="user-login-data-wrap lead-flight-booking-table booking-report-table">
+              <div ref={tableRef}>
+                <DataTable
+                  options={{
+                    paging: true,
+                    searching: true,
+                    ordering: false,
+                    responsive: true
+                  }}
+                  className="display">
+                  <thead>
+                    <tr>
+                      <th>Deal Code</th>
+                      <th>Source Name</th>
+                      <th>Destination Name</th>
+                      <th>Journey Type - Cabin Class -  Booking Class</th>
+                      <th>Depart - Return Date</th>
+                      <th>Airline Detail</th>
+                      <th>Deal Amount</th>
+                      <th>Expiry Date</th>
+                      <th>Status</th>
+                      <th>Deal Source</th>
+                      <th>Edit/Cancel</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>RC2022</td>
+                      <td>JFK-New York	</td>
+                      <td>DXB-Dubai	</td>
+                      <td>RoundTrip - Economy</td>
+                      <td>01/06/2022 - 03/06/2022</td>
+                      <td>AA-american airlines	</td>
+                      <td>1338.17	</td>
+                      <td>05/05/2022	</td>
+                      <td>True	</td>
+                      <td>RESERVATIONCENTRE	</td>
+                      <td><a href="#">Edit</a> - <a href="#">Cancel</a></td>
+                    </tr>
+                  </tbody>
+                </DataTable>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
